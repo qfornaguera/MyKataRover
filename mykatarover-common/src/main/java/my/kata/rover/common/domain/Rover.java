@@ -35,9 +35,23 @@ public class Rover implements CommunicationApi {
         }else  if (command == 'b'){
             translation = -1;
         }
-        getPlace().setX((getPlace().getX()+(vector[0]*translation)) % Constants.MARS_SIZE);
-        getPlace().setY((getPlace().getY()+(vector[1]*translation)) % Constants.MARS_SIZE);
+        getPlace().setX(Math.abs((getPlace().getX()+(vector[0]*translation)) % Constants.MARS_SIZE));
+        getPlace().setY(Math.abs((getPlace().getY()+(vector[1]*translation)) % Constants.MARS_SIZE));
 
+    }
+
+    public void turn(char command){
+        Direction[] directions = Direction.values();
+        int translation;
+        if(command == 'r'){
+            translation = 1;
+        }else  if (command == 'l'){
+            translation = -1;
+        }else{
+            return;
+        }
+        int nextDirectionOrdinal = Math.abs((getDirection().ordinal()+translation) % directions.length);
+        setDirection(directions[nextDirectionOrdinal]);
     }
 
     private int[] directionVector(){
@@ -58,5 +72,6 @@ public class Rover implements CommunicationApi {
                 return new int[]{0,0};
         }
     }
+
 
 }
