@@ -57,13 +57,13 @@ public class Rover implements CommunicationApi {
     private int[] directionVector(){
         switch(getDirection()){
             case N:
-                return new int[]{0, 1};
+                return new int[]{0, -1};
 
             case E:
                 return new int[]{1, 0};
 
             case S:
-                return new int[]{0, -1};
+                return new int[]{0, 1};
 
             case W:
                 return new int[]{-1, 0};
