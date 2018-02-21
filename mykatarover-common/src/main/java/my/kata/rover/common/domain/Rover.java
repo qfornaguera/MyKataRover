@@ -35,8 +35,8 @@ public class Rover implements CommunicationApi {
         }else  if (command == 'b'){
             translation = -1;
         }
-        getPlace().setX(Math.abs((getPlace().getX()+(vector[0]*translation)) % Constants.MARS_SIZE));
-        getPlace().setY(Math.abs((getPlace().getY()+(vector[1]*translation)) % Constants.MARS_SIZE));
+        getPlace().setX(Math.abs((Constants.MARS_SIZE+(getPlace().getX()+(vector[0]*translation))) % Constants.MARS_SIZE));
+        getPlace().setY(Math.abs((Constants.MARS_SIZE+(getPlace().getY()+(vector[1]*translation))) % Constants.MARS_SIZE));
 
     }
 

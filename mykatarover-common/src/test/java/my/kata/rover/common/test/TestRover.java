@@ -5,6 +5,7 @@ import lombok.Setter;
 import my.kata.rover.common.domain.Direction;
 import my.kata.rover.common.domain.Place;
 import my.kata.rover.common.domain.Rover;
+import my.kata.rover.common.utils.Constants;
 import my.kata.rover.common.utils.Landing;
 import org.junit.Assert;
 import org.junit.Before;
@@ -90,7 +91,33 @@ public class TestRover {
         Assert.assertEquals(5,roverito.getPlace().getX());
     }
 
+    @Test
+    public void roverGoesThroughNorthEdge(){
+        Rover roverito = new Rover(new Place(5,0),Direction.N,new char[]{'f'});
+        roverito.move(roverito.getThingsToDo()[0]);
+        Assert.assertEquals(Constants.MARS_SIZE-1,roverito.getPlace().getY());
+    }
 
+    @Test
+    public void roverGoesThroughSouthEdge(){
+        Rover roverito = new Rover(new Place(5,Constants.MARS_SIZE-1),Direction.S,new char[]{'f'});
+        roverito.move(roverito.getThingsToDo()[0]);
+        Assert.assertEquals(0,roverito.getPlace().getY());
+    }
+
+    @Test
+    public void roverGoesThroughEastEdge(){
+        Rover roverito = new Rover(new Place(Constants.MARS_SIZE-1,5),Direction.E,new char[]{'f'});
+        roverito.move(roverito.getThingsToDo()[0]);
+        Assert.assertEquals(0,roverito.getPlace().getX());
+    }
+
+    @Test
+    public void roverGoesThroughWestEdge(){
+        Rover roverito = new Rover(new Place(0,5),Direction.W,new char[]{'f'});
+        roverito.move(roverito.getThingsToDo()[0]);
+        Assert.assertEquals(Constants.MARS_SIZE-1,roverito.getPlace().getX());
+    }
 
     @Test
     public void roverTurnsRight() {
