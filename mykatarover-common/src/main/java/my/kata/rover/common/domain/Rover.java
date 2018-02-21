@@ -5,11 +5,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import my.kata.rover.common.interfaces.CommunicationApi;
+import my.kata.rover.common.interfaces.ReportApi;
+import my.kata.rover.common.interfaces.Something;
 import my.kata.rover.common.utils.Constants;
 
 @NoArgsConstructor
 @AllArgsConstructor
-public class Rover implements CommunicationApi {
+public class Rover implements CommunicationApi, Something {
 
     @Getter
     @Setter
@@ -23,11 +25,40 @@ public class Rover implements CommunicationApi {
     @Setter
     char [] thingsToDo;
 
+    @Getter
+    @Setter
+    private Sensor sensor;
+
+    @Getter
+    @Setter
+    private ReportApi houston;
+
+    public Rover(Place place,Direction direction,char... thingsToDo){
+        this.place = place;
+        this.direction = direction;
+        this.thingsToDo = thingsToDo;
+
+    }
+
     public void recieveMovementPattern(char... actions) {
         setThingsToDo(actions);
     }
 
-    public void move(char command){
+    public void  executeMovementPattern(){
+        for(char action : thingsToDo){
+
+            if(action == 'f' || action == 'b'){
+                if(!move(action)){
+                    break;
+                }
+            }else if(action == 'l' || action == 'r'){
+                turn(action);
+            }
+        }
+
+    }
+
+    public boolean move(char command){
         int [] vector = directionVector();
         int translation = 0;
         if(command == 'f'){
@@ -35,9 +66,22 @@ public class Rover implements CommunicationApi {
         }else  if (command == 'b'){
             translation = -1;
         }
-        getPlace().setX(Math.abs((Constants.MARS_SIZE+(getPlace().getX()+(vector[0]*translation))) % Constants.MARS_SIZE));
-        getPlace().setY(Math.abs((Constants.MARS_SIZE+(getPlace().getY()+(vector[1]*translation))) % Constants.MARS_SIZE));
+        int x,y;
+        x = Math.abs((Constants.MARS_SIZE+(getPlace().getX()+(vector[0]*translation))) % Constants.MARS_SIZE);
+        y = Math.abs((Constants.MARS_SIZE+(getPlace().getY()+(vector[1]*translation))) % Constants.MARS_SIZE);
 
+        if(getSensor() != null){
+            Place inFrontPlace = new Place(x,y);
+            if(!getSensor().checkPlaceIsSecureToMove(inFrontPlace)){
+                if(checkConectionToReportApi()){
+                    getHouston().reportObstacle("Movement aborted: Houston, we got a problem!",inFrontPlace);
+                    return false;
+                }
+            }
+        }
+        getPlace().setX(x);
+        getPlace().setY(y);
+        return true;
     }
 
     public void turn(char command){
@@ -71,6 +115,10 @@ public class Rover implements CommunicationApi {
             default:
                 return new int[]{0,0};
         }
+    }
+
+    private boolean checkConectionToReportApi(){
+        return houston != null && houston.isConnected();
     }
 
 

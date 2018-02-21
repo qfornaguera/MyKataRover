@@ -2,14 +2,13 @@ package my.kata.rover.common.test;
 
 import lombok.Getter;
 import lombok.Setter;
-import my.kata.rover.common.domain.Direction;
-import my.kata.rover.common.domain.Place;
-import my.kata.rover.common.domain.Rover;
+import my.kata.rover.common.domain.*;
 import my.kata.rover.common.utils.Constants;
 import my.kata.rover.common.utils.Landing;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 public class TestRover {
 
@@ -128,6 +127,41 @@ public class TestRover {
     public void roverTurnsLeft(){
         testTurn('l');
     }
+
+    @Test
+    public void roverFindsARock(){
+        Sensor sensor = Mockito.mock(Sensor.class);
+        Mockito.when(sensor.checkPlaceIsSecureToMove(new Place())).thenReturn(false);
+        Rover roverito = new Rover(
+                new Place(5,5),Direction.N,new char[]{'f'},sensor,new Houston()
+        );
+        roverito.move('f');
+        Assert.assertEquals(5,roverito.getPlace().getX());
+        Assert.assertEquals(5,roverito.getPlace().getY());
+    }
+
+    @Test
+    public void roverStopsDoingThingsAfterColission(){
+        Sensor sensor = Mockito.mock(Sensor.class);
+        Mockito.when(sensor.checkPlaceIsSecureToMove(new Place())).thenReturn(false);
+        Rover roverito = new Rover(
+                new Place(5,5),Direction.N,new char[]{'f','l','f','r','b'},sensor,new Houston()
+        );
+        roverito.executeMovementPattern();
+        Assert.assertEquals(5,roverito.getPlace().getX());
+        Assert.assertEquals(5,roverito.getPlace().getY());
+    }
+
+    @Test
+    public void roverCompletesAMovementPattern(){
+        Rover roverito = new Rover(
+                new Place(5,5),Direction.N,new char[]{'f','l','f','r','b'}
+        );
+        roverito.executeMovementPattern();
+        Assert.assertEquals(6,roverito.getPlace().getX());
+        Assert.assertEquals(3,roverito.getPlace().getY());
+    }
+
 
     private void testTurn(char command){
         roverInitialPoint();
